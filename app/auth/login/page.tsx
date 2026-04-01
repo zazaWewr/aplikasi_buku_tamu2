@@ -153,29 +153,31 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            {/* Demo Credentials Info */}
-            <div className="mt-6 pt-6 border-t animate-fade-in animate-delay-400">
-              <div className="rounded-xl bg-muted/50 p-4 border border-border">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
-                    <Info className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground mb-2">KHUSUS ADMIN !!!</p>
-            
-                   
-                    </div>
-                  
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+           {/* Demo Credentials Info */}
+<div className="mt-6 pt-6 border-t animate-fade-in animate-delay-400">
+  <div className="rounded-xl bg-muted/50 p-4 border border-border">
+    <div className="flex items-start gap-3">
+      
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
+        <Info className="h-4 w-4 text-primary" />
+      </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-6 animate-fade-in animate-delay-500">
-          SMA Muhammadiyah Kupang - Buku Tamu Digital
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground mb-2">
+          KHUSUS ADMIN !!!
         </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</CardContent>
+</Card>
+
+<p className="text-center text-xs text-muted-foreground mt-6 animate-fade-in animate-delay-500">
+  SMA Muhammadiyah Kupang - Buku Tamu Digital
+</p>
       </div>
     </div>
   )
