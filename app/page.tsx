@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2, Loader2, GraduationCap, Settings, Users, Clock, BookOpen } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 import Link from "next/link"
 
 const TUJUAN_OPTIONS = [
@@ -89,75 +90,78 @@ export default function BukuTamuPage() {
 
       {/* Header */}
       <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4 animate-fade-in">
-            <div className="relative">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/25">
-                <GraduationCap className="h-6 w-6 text-primary-foreground" />
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 animate-fade-in min-w-0">
+            <div className="relative flex-shrink-0">
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/25">
+                <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
               </div>
-              <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-accent border-2 border-background" />
+              <div className="absolute -bottom-1 -right-1 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-accent border-2 border-background" />
             </div>
-            <div>
-              <h1 className="font-bold text-lg text-foreground">SMA Muhammadiyah Kupang</h1>
-              <p className="text-sm text-muted-foreground">Buku Tamu Digital</p>
+            <div className="min-w-0">
+              <h1 className="font-bold text-sm sm:text-lg text-foreground truncate">SMA Muhammadiyah Kupang</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">Buku Tamu Digital</p>
             </div>
           </div>
-          <Link href="/admin" className="animate-fade-in animate-delay-200">
-            <Button variant="outline" size="sm" className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors duration-300">
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Admin</span>
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <ThemeToggle />
+            <Link href="/admin" className="animate-fade-in animate-delay-200">
+              <Button variant="outline" size="sm" className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors duration-300 h-9 px-2 sm:px-3">
+                <Settings className="h-4 w-4" />
+                <span className="hidden sm:inline">Admin</span>
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-4xl">
         {/* Hero Section */}
-        <div className="text-center mb-8 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3 text-balance">
+        <div className="text-center mb-4 sm:mb-8 animate-fade-in">
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2 sm:mb-3 text-balance px-2">
             Selamat Datang di SMA Muhammadiyah Kupang
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty">
+          <p className="text-muted-foreground text-sm sm:text-lg max-w-2xl mx-auto text-pretty px-2">
             Silakan isi buku tamu digital kami untuk mencatat kunjungan Anda
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
           <div className="animate-fade-in animate-delay-100">
-            <Card className="text-center p-4 hover:shadow-md transition-shadow duration-300 border-primary/10">
-              <Users className="h-6 w-6 mx-auto text-primary mb-2" />
-              <p className="text-xs text-muted-foreground">Pengunjung</p>
-              <p className="font-semibold text-foreground">Setiap Hari</p>
+            <Card className="text-center p-2 sm:p-4 hover:shadow-md transition-shadow duration-300 border-primary/10">
+              <Users className="h-5 w-5 sm:h-6 sm:w-6 mx-auto text-primary mb-1 sm:mb-2" />
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Pengunjung</p>
+              <p className="font-semibold text-foreground text-xs sm:text-base">Setiap Hari</p>
             </Card>
           </div>
           <div className="animate-fade-in animate-delay-200">
-            <Card className="text-center p-4 hover:shadow-md transition-shadow duration-300 border-primary/10">
-              <Clock className="h-6 w-6 mx-auto text-primary mb-2" />
-              <p className="text-xs text-muted-foreground">Jam Layanan</p>
-              <p className="font-semibold text-foreground">07:00 - 15:00</p>
+            <Card className="text-center p-2 sm:p-4 hover:shadow-md transition-shadow duration-300 border-primary/10">
+              <Clock className="h-5 w-5 sm:h-6 sm:w-6 mx-auto text-primary mb-1 sm:mb-2" />
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Jam Layanan</p>
+              <p className="font-semibold text-foreground text-xs sm:text-base">07:00 - 15:00</p>
             </Card>
           </div>
           <div className="animate-fade-in animate-delay-300">
-            <Card className="text-center p-4 hover:shadow-md transition-shadow duration-300 border-primary/10">
-              <BookOpen className="h-6 w-6 mx-auto text-primary mb-2" />
-              <p className="text-xs text-muted-foreground">Pencatatan</p>
-              <p className="font-semibold text-foreground">Otomatis</p>
+            <Card className="text-center p-2 sm:p-4 hover:shadow-md transition-shadow duration-300 border-primary/10">
+              <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 mx-auto text-primary mb-1 sm:mb-2" />
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Pencatatan</p>
+              <p className="font-semibold text-foreground text-xs sm:text-base">Otomatis</p>
             </Card>
           </div>
         </div>
 
         {/* Form Card */}
         <Card className="shadow-xl border-0 bg-card animate-scale-in overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-primary via-primary/80 to-accent" />
-          <CardHeader className="text-center pb-2 pt-6">
-            <CardTitle className="text-2xl text-foreground">Form Buku Tamu</CardTitle>
-            <CardDescription className="text-base">
+          <div className="h-1.5 sm:h-2 bg-gradient-to-r from-primary via-primary/80 to-accent" />
+          <CardHeader className="text-center pb-2 pt-4 sm:pt-6 px-4 sm:px-6">
+            <CardTitle className="text-xl sm:text-2xl text-foreground">Form Buku Tamu</CardTitle>
+            <CardDescription className="text-sm sm:text-base">
               Lengkapi data kunjungan Anda di bawah ini
             </CardDescription>
           </CardHeader>
-          <CardContent className="pb-8">
+          <CardContent className="pb-6 sm:pb-8 px-4 sm:px-6">
             {isSuccess && (
               <div className="mb-6 flex items-center gap-3 rounded-xl bg-primary/10 p-4 text-primary animate-scale-in border border-primary/20">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20">
@@ -178,10 +182,10 @@ export default function BukuTamuPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid md:grid-cols-2 gap-5">
-                <div className="space-y-2 animate-fade-in animate-delay-100">
-                  <Label htmlFor="nama" className="text-foreground font-medium">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
+                <div className="space-y-1.5 sm:space-y-2 animate-fade-in animate-delay-100">
+                  <Label htmlFor="nama" className="text-foreground font-medium text-sm">
                     Nama Lengkap <span className="text-destructive">*</span>
                   </Label>
                   <Input
@@ -192,12 +196,12 @@ export default function BukuTamuPage() {
                       setFormData({ ...formData, nama: e.target.value })
                     }
                     required
-                    className="h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                    className="h-10 sm:h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm sm:text-base"
                   />
                 </div>
 
-                <div className="space-y-2 animate-fade-in animate-delay-200">
-                  <Label htmlFor="instansi" className="text-foreground font-medium">Instansi / Asal</Label>
+                <div className="space-y-1.5 sm:space-y-2 animate-fade-in animate-delay-200">
+                  <Label htmlFor="instansi" className="text-foreground font-medium text-sm">Instansi / Asal</Label>
                   <Input
                     id="instansi"
                     placeholder="Instansi atau asal (opsional)"
@@ -205,14 +209,14 @@ export default function BukuTamuPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, instansi: e.target.value })
                     }
-                    className="h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                    className="h-10 sm:h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm sm:text-base"
                   />
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-5">
-                <div className="space-y-2 animate-fade-in animate-delay-300">
-                  <Label htmlFor="no_hp" className="text-foreground font-medium">
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
+                <div className="space-y-1.5 sm:space-y-2 animate-fade-in animate-delay-300">
+                  <Label htmlFor="no_hp" className="text-foreground font-medium text-sm">
                     Nomor HP / WhatsApp <span className="text-destructive">*</span>
                   </Label>
                   <Input
@@ -224,12 +228,12 @@ export default function BukuTamuPage() {
                       setFormData({ ...formData, no_hp: e.target.value })
                     }
                     required
-                    className="h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                    className="h-10 sm:h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm sm:text-base"
                   />
                 </div>
 
-                <div className="space-y-2 animate-fade-in animate-delay-400">
-                  <Label htmlFor="tujuan" className="text-foreground font-medium">
+                <div className="space-y-1.5 sm:space-y-2 animate-fade-in animate-delay-400">
+                  <Label htmlFor="tujuan" className="text-foreground font-medium text-sm">
                     Tujuan Bertemu <span className="text-destructive">*</span>
                   </Label>
                   <Select
@@ -239,7 +243,7 @@ export default function BukuTamuPage() {
                     }
                     required
                   >
-                    <SelectTrigger id="tujuan" className="h-11">
+                    <SelectTrigger id="tujuan" className="h-10 sm:h-11 text-sm sm:text-base">
                       <SelectValue placeholder="Pilih tujuan bertemu" />
                     </SelectTrigger>
                     <SelectContent>
@@ -253,31 +257,31 @@ export default function BukuTamuPage() {
                 </div>
               </div>
 
-              <div className="space-y-2 animate-fade-in animate-delay-500">
-                <Label htmlFor="keperluan" className="text-foreground font-medium">
+              <div className="space-y-1.5 sm:space-y-2 animate-fade-in animate-delay-500">
+                <Label htmlFor="keperluan" className="text-foreground font-medium text-sm">
                   Keperluan <span className="text-destructive">*</span>
                 </Label>
                 <Textarea
                   id="keperluan"
                   placeholder="Jelaskan keperluan kunjungan Anda"
-                  rows={4}
+                  rows={3}
                   value={formData.keperluan}
                   onChange={(e) =>
                     setFormData({ ...formData, keperluan: e.target.value })
                   }
                   required
-                  className="resize-none transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                  className="resize-none transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm sm:text-base min-h-[80px] sm:min-h-[100px]"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
+                className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
                 disabled={isSubmitting || !formData.tujuan}
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                     Menyimpan Data...
                   </>
                 ) : (
@@ -289,11 +293,11 @@ export default function BukuTamuPage() {
         </Card>
 
         {/* Footer Info */}
-        <div className="mt-8 text-center animate-fade-in">
-          <p className="text-sm text-muted-foreground mb-2">
+        <div className="mt-6 sm:mt-8 text-center animate-fade-in px-2">
+          <p className="text-xs sm:text-sm text-muted-foreground mb-2">
             Data yang Anda masukkan akan digunakan untuk keperluan administrasi sekolah.
           </p>
-          <p className="text-xs text-muted-foreground/70">
+          <p className="text-[10px] sm:text-xs text-muted-foreground/70">
             SMA Muhammadiyah Kupang - Buku Tamu Digital
           </p>
         </div>

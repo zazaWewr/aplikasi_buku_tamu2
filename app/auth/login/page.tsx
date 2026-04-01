@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { GraduationCap, Loader2, AlertCircle, Shield, ArrowLeft } from "lucide-react"
+import { GraduationCap, Loader2, AlertCircle, Shield, ArrowLeft, Info } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 import Link from "next/link"
 
 export default function LoginPage() {
@@ -48,6 +49,11 @@ export default function LoginPage() {
     }
   }
 
+  const fillDemoCredentials = () => {
+    setEmail("admin@smamuhkupang.sch.id")
+    setPassword("admin123")
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative Background */}
@@ -57,14 +63,19 @@ export default function LoginPage() {
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-background to-transparent" />
       </div>
 
-      {/* Back Button */}
-      <Link 
-        href="/" 
-        className="absolute top-6 left-6 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors animate-fade-in"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        <span className="text-sm">Kembali</span>
-      </Link>
+      {/* Top Bar */}
+      <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+        <Link 
+          href="/" 
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors animate-fade-in"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span className="text-sm">Kembali</span>
+        </Link>
+        <div className="animate-fade-in">
+          <ThemeToggle />
+        </div>
+      </div>
 
       <div className="w-full max-w-md animate-scale-in">
         <Card className="shadow-2xl border-0 overflow-hidden">
@@ -142,13 +153,31 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-8 pt-6 border-t text-center space-y-3 animate-fade-in animate-delay-400">
-              <p className="text-sm text-muted-foreground">
-                Belum punya akun?{" "}
-                <Link href="/auth/sign-up" className="text-primary font-medium hover:underline">
-                  Daftar di sini
-                </Link>
-              </p>
+            {/* Demo Credentials Info */}
+            <div className="mt-6 pt-6 border-t animate-fade-in animate-delay-400">
+              <div className="rounded-xl bg-muted/50 p-4 border border-border">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
+                    <Info className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground mb-2">Kredensial Demo</p>
+                    <div className="space-y-1 text-xs text-muted-foreground">
+                      <p><span className="font-medium">Email:</span> admin@smamuhkupang.sch.id</p>
+                      <p><span className="font-medium">Password:</span> admin123</p>
+                    </div>
+                    <Button 
+                      type="button"
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-3 w-full text-xs"
+                      onClick={fillDemoCredentials}
+                    >
+                      Gunakan Kredensial Demo
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
