@@ -74,6 +74,7 @@ import {
   Filter,
 } from "lucide-react"
 import type { Tamu } from "@/lib/types"
+import { ThemeToggle } from "@/components/theme-toggle"
 import Link from "next/link"
 
 interface AdminDashboardProps {
@@ -353,80 +354,81 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
 
       {/* Header */}
       <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-4 animate-fade-in group">
-            <div className="relative">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/25 transition-transform group-hover:scale-105">
-                <GraduationCap className="h-6 w-6 text-primary-foreground" />
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <Link href="/" className="flex items-center gap-2 sm:gap-4 animate-fade-in group min-w-0">
+            <div className="relative flex-shrink-0">
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/25 transition-transform group-hover:scale-105">
+                <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
               </div>
             </div>
-            <div>
-              <h1 className="font-bold text-lg text-foreground">Admin Dashboard</h1>
-              <p className="text-sm text-muted-foreground">SMA Muhammadiyah Kupang</p>
+            <div className="min-w-0 hidden xs:block sm:block">
+              <h1 className="font-bold text-sm sm:text-lg text-foreground truncate">Admin Dashboard</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">SMA Muhammadiyah Kupang</p>
             </div>
           </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground hidden md:inline px-3 py-1 rounded-full bg-muted">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+            <span className="text-xs sm:text-sm text-muted-foreground hidden lg:inline px-2 sm:px-3 py-1 rounded-full bg-muted truncate max-w-[200px]">
               {userEmail}
             </span>
+            <ThemeToggle />
             <Button 
               variant="outline" 
               size="sm" 
               onClick={handleLogout}
-              className="hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-colors"
+              className="hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-colors h-9 px-2 sm:px-3"
             >
-              <LogOut className="h-4 w-4 mr-2" />
-              Keluar
+              <LogOut className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Keluar</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
           <Card className="animate-fade-in border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardDescription className="text-muted-foreground">Total Tamu</CardDescription>
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Users className="h-5 w-5 text-primary" />
+            <CardHeader className="p-3 sm:pb-2 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <CardDescription className="text-muted-foreground text-xs sm:text-sm">Total Tamu</CardDescription>
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
               </div>
-              <CardTitle className="text-3xl font-bold text-foreground">{data.length}</CardTitle>
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">{data.length}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="animate-fade-in animate-delay-100 border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardDescription className="text-muted-foreground">Hari Ini</CardDescription>
-                <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-accent" />
+            <CardHeader className="p-3 sm:pb-2 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <CardDescription className="text-muted-foreground text-xs sm:text-sm">Hari Ini</CardDescription>
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
                 </div>
               </div>
-              <CardTitle className="text-3xl font-bold text-foreground">{todayCount}</CardTitle>
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">{todayCount}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="animate-fade-in animate-delay-200 border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardDescription className="text-muted-foreground">Minggu Ini</CardDescription>
-                <div className="h-10 w-10 rounded-lg bg-chart-3/20 flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-chart-3" />
+            <CardHeader className="p-3 sm:pb-2 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <CardDescription className="text-muted-foreground text-xs sm:text-sm">Minggu Ini</CardDescription>
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-chart-3/20 flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-chart-3" />
                 </div>
               </div>
-              <CardTitle className="text-3xl font-bold text-foreground">{thisWeekCount}</CardTitle>
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">{thisWeekCount}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="animate-fade-in animate-delay-300 border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardDescription className="text-muted-foreground">Bulan Ini</CardDescription>
-                <div className="h-10 w-10 rounded-lg bg-chart-4/20 flex items-center justify-center">
-                  <CalendarDays className="h-5 w-5 text-chart-4" />
+            <CardHeader className="p-3 sm:pb-2 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <CardDescription className="text-muted-foreground text-xs sm:text-sm">Bulan Ini</CardDescription>
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-chart-4/20 flex items-center justify-center flex-shrink-0">
+                  <CalendarDays className="h-4 w-4 sm:h-5 sm:w-5 text-chart-4" />
                 </div>
               </div>
-              <CardTitle className="text-3xl font-bold text-foreground">{thisMonthCount}</CardTitle>
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">{thisMonthCount}</CardTitle>
             </CardHeader>
           </Card>
         </div>
@@ -434,14 +436,14 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
         {/* Data Table */}
         <Card className="border-0 shadow-xl animate-scale-in overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-primary via-primary/80 to-accent" />
-          <CardHeader>
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <CardHeader className="p-3 sm:p-6">
+            <div className="flex flex-col gap-3 sm:gap-4">
               <div>
-                <CardTitle className="flex items-center gap-2 text-foreground">
-                  <Users className="h-5 w-5 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-foreground text-base sm:text-lg">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                   Daftar Pengunjung
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   {filteredData.length} pengunjung ditemukan
                 </CardDescription>
               </div>
@@ -451,18 +453,18 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                   size="sm"
                   onClick={handleRefresh}
                   disabled={isPending}
-                  className="transition-all duration-200"
+                  className="transition-all duration-200 h-8 sm:h-9 text-xs sm:text-sm"
                 >
-                  <RefreshCw className={`h-4 w-4 mr-2 ${isPending ? "animate-spin" : ""}`} />
+                  <RefreshCw className={`h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 ${isPending ? "animate-spin" : ""}`} />
                   Refresh
                 </Button>
                 
                 {/* Export Dialog */}
                 <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="default" size="sm" className="shadow-md shadow-primary/25">
-                      <Download className="h-4 w-4 mr-2" />
-                      Export Data
+                    <Button variant="default" size="sm" className="shadow-md shadow-primary/25 h-8 sm:h-9 text-xs sm:text-sm">
+                      <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      Export
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-md">
@@ -540,29 +542,113 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="mb-4">
+          <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+            <div className="mb-3 sm:mb-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Cari nama, instansi, tujuan, atau keperluan..."
+                  placeholder="Cari nama, instansi, tujuan..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                  className="pl-10 h-10 sm:h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm"
                 />
               </div>
             </div>
 
-            <div className="rounded-xl border overflow-hidden">
+            {/* Mobile Cards View */}
+            <div className="block sm:hidden space-y-3">
+              {filteredData.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                      <Users className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {searchTerm ? "Tidak ada data yang cocok" : "Belum ada data pengunjung"}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                filteredData.map((tamu) => (
+                  <Card key={tamu.id} className="p-3 border shadow-sm">
+                    <div className="flex justify-between items-start gap-2 mb-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-foreground text-sm truncate">{tamu.nama}</p>
+                        <p className="text-xs text-muted-foreground truncate">{tamu.instansi || "-"}</p>
+                      </div>
+                      <AlertDialog>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted flex-shrink-0">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Hapus Data
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <AlertDialogContent className="max-w-[90vw] sm:max-w-lg">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Hapus Data Pengunjung?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Data pengunjung atas nama <strong>{tamu.nama}</strong> akan dihapus secara permanen.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(tamu.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Hapus
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground w-14 flex-shrink-0">No HP:</span>
+                        <span className="text-foreground">{tamu.no_hp}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground w-14 flex-shrink-0">Tujuan:</span>
+                        <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 text-[10px] px-1.5 py-0">
+                          {tamu.tujuan}
+                        </Badge>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-muted-foreground w-14 flex-shrink-0">Keperluan:</span>
+                        <span className="text-foreground line-clamp-2">{tamu.keperluan}</span>
+                      </div>
+                      <div className="flex items-center gap-2 pt-1 border-t mt-2">
+                        <Clock className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-muted-foreground">{formatDate(tamu.waktu_kunjungan)}</span>
+                      </div>
+                    </div>
+                  </Card>
+                ))
+              )}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="rounded-xl border overflow-hidden hidden sm:block">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50 hover:bg-muted/50">
-                    <TableHead className="font-semibold text-foreground">Nama</TableHead>
-                    <TableHead className="font-semibold text-foreground">Instansi</TableHead>
-                    <TableHead className="font-semibold text-foreground">No HP</TableHead>
-                    <TableHead className="font-semibold text-foreground">Tujuan</TableHead>
-                    <TableHead className="font-semibold text-foreground">Keperluan</TableHead>
-                    <TableHead className="font-semibold text-foreground">Waktu</TableHead>
+                    <TableHead className="font-semibold text-foreground text-xs sm:text-sm">Nama</TableHead>
+                    <TableHead className="font-semibold text-foreground text-xs sm:text-sm">Instansi</TableHead>
+                    <TableHead className="font-semibold text-foreground text-xs sm:text-sm">No HP</TableHead>
+                    <TableHead className="font-semibold text-foreground text-xs sm:text-sm">Tujuan</TableHead>
+                    <TableHead className="font-semibold text-foreground text-xs sm:text-sm">Keperluan</TableHead>
+                    <TableHead className="font-semibold text-foreground text-xs sm:text-sm">Waktu</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -587,25 +673,25 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                         className="hover:bg-muted/30 transition-colors duration-200"
                         style={{ animationDelay: `${index * 50}ms` }}
                       >
-                        <TableCell className="font-medium text-foreground">{tamu.nama}</TableCell>
-                        <TableCell className="text-muted-foreground">{tamu.instansi || "-"}</TableCell>
-                        <TableCell className="text-muted-foreground">{tamu.no_hp}</TableCell>
+                        <TableCell className="font-medium text-foreground text-xs sm:text-sm">{tamu.nama}</TableCell>
+                        <TableCell className="text-muted-foreground text-xs sm:text-sm">{tamu.instansi || "-"}</TableCell>
+                        <TableCell className="text-muted-foreground text-xs sm:text-sm">{tamu.no_hp}</TableCell>
                         <TableCell>
-                          <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
+                          <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 text-xs">
                             {tamu.tujuan}
                           </Badge>
                         </TableCell>
-                        <TableCell className="max-w-[200px] truncate text-muted-foreground">
+                        <TableCell className="max-w-[200px] truncate text-muted-foreground text-xs sm:text-sm">
                           {tamu.keperluan}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        <TableCell className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                           {formatDate(tamu.waktu_kunjungan)}
                         </TableCell>
                         <TableCell>
                           <AlertDialog>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="hover:bg-muted">
+                                <Button variant="ghost" size="icon" className="hover:bg-muted h-8 w-8">
                                   <MoreVertical className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
@@ -620,11 +706,11 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                                 </AlertDialogTrigger>
                               </DropdownMenuContent>
                             </DropdownMenu>
-                            <AlertDialogContent>
+                            <AlertDialogContent className="max-w-[90vw] sm:max-w-lg">
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Hapus Data Pengunjung?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Data pengunjung atas nama <strong>{tamu.nama}</strong> akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.
+                                  Data pengunjung atas nama <strong>{tamu.nama}</strong> akan dihapus secara permanen.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
