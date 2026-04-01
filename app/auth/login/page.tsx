@@ -161,20 +161,11 @@ export default function LoginPage() {
                     <Info className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground mb-2">Kredensial Demo</p>
-                    <div className="space-y-1 text-xs text-muted-foreground">
-                      <p><span className="font-medium">Email:</span> admin@smamuhkupang.sch.id</p>
-                      <p><span className="font-medium">Password:</span> admin123</p>
+                    <p className="text-sm font-medium text-foreground mb-2">KHUSUS ADMIN !!!</p>
+            
+                   
                     </div>
-                    <Button 
-                      type="button"
-                      variant="outline" 
-                      size="sm" 
-                      className="mt-3 w-full text-xs"
-                      onClick={fillDemoCredentials}
-                    >
-                      Gunakan Kredensial Demo
-                    </Button>
+                  
                   </div>
                 </div>
               </div>
