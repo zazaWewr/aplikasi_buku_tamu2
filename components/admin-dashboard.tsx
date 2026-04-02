@@ -223,44 +223,41 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
     const exportData = getExportData()
     const periodLabel = getExportPeriodLabel()
     
-    const printWindow = window.open("", "_blank")
-    if (!printWindow) {
-      setIsExporting(false)
-      return
-    }
-
     const htmlContent = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>Buku Tamu - SMA Muhammadiyah Kupang - ${periodLabel}</title>
+        <meta charset="UTF-8">
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #1a1a1a; }
-          .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #166534; }
-          .logo { font-size: 24px; font-weight: bold; color: #166534; margin-bottom: 5px; }
-          .school-name { font-size: 20px; font-weight: bold; color: #1a1a1a; }
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #1a1a1a; background: #fff; }
+          .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #22c55e; }
+          .logo { font-size: 24px; font-weight: bold; color: #16a34a; margin-bottom: 5px; }
           .subtitle { font-size: 14px; color: #666; margin-top: 5px; }
-          .period { font-size: 16px; font-weight: 600; color: #166534; margin-top: 10px; padding: 8px 16px; background: #f0fdf4; border-radius: 8px; display: inline-block; }
+          .period { font-size: 16px; font-weight: 600; color: #16a34a; margin-top: 10px; padding: 8px 16px; background: #dcfce7; border-radius: 8px; display: inline-block; }
+          .print-btn { display: block; margin: 20px auto; padding: 12px 32px; background: #22c55e; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+          .print-btn:hover { background: #16a34a; }
           .stats { display: flex; justify-content: center; gap: 30px; margin-bottom: 25px; }
-          .stat-item { text-align: center; padding: 15px 25px; background: #f8fafc; border-radius: 10px; }
-          .stat-value { font-size: 28px; font-weight: bold; color: #166534; }
+          .stat-item { text-align: center; padding: 15px 25px; background: #f0fdf4; border-radius: 10px; border: 1px solid #bbf7d0; }
+          .stat-value { font-size: 28px; font-weight: bold; color: #16a34a; }
           .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
           table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; }
-          th { background: #166534; color: white; padding: 12px 8px; text-align: left; font-weight: 600; }
+          th { background: #22c55e; color: white; padding: 12px 8px; text-align: left; font-weight: 600; }
           td { padding: 10px 8px; border-bottom: 1px solid #e5e7eb; }
-          tr:nth-child(even) { background: #f9fafb; }
-          tr:hover { background: #f0fdf4; }
+          tr:nth-child(even) { background: #f0fdf4; }
           .no-col { width: 40px; text-align: center; }
           .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #666; padding-top: 20px; border-top: 1px solid #e5e7eb; }
           .print-date { margin-bottom: 5px; }
           @media print {
-            body { padding: 10px; }
-            .no-print { display: none; }
+            body { padding: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none !important; }
           }
         </style>
       </head>
       <body>
+        <button class="print-btn no-print" onclick="window.print()">Cetak / Print PDF</button>
+        
         <div class="header">
           <div class="logo">SMA MUHAMMADIYAH KUPANG</div>
           <div class="subtitle">Buku Tamu Digital</div>
@@ -308,23 +305,35 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
           <div class="print-date">Dicetak pada: ${formatDateForExport(new Date().toISOString())}</div>
           <div>SMA Muhammadiyah Kupang - Buku Tamu Digital</div>
         </div>
-
-        <script>
-          window.onload = function() {
-            window.print();
-          }
-        </script>
+        
+        <p class="no-print" style="text-align: center; margin-top: 30px; color: #666; font-size: 13px;">
+          Klik tombol "Cetak / Print PDF" di atas atau tekan Ctrl+P untuk mencetak.<br/>
+          Pilih "Save as PDF" sebagai printer untuk menyimpan sebagai file PDF.
+        </p>
       </body>
       </html>
     `
 
-    printWindow.document.write(htmlContent)
-    printWindow.document.close()
-    
-    setTimeout(() => {
+    // Open in new tab for reliable printing across all browsers
+    const newWindow = window.open('', '_blank')
+    if (newWindow) {
+      newWindow.document.write(htmlContent)
+      newWindow.document.close()
       setIsExporting(false)
       setIsExportDialogOpen(false)
-    }, 500)
+    } else {
+      // Fallback: download as HTML file if popup is blocked
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = `buku-tamu-sma-muhammadiyah-kupang-${periodLabel.replace(/ /g, '-').toLowerCase()}.html`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(link.href)
+      setIsExporting(false)
+      setIsExportDialogOpen(false)
+    }
   }
 
   // Statistics
