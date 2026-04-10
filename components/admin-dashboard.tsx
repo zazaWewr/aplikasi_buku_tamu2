@@ -107,7 +107,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
   const [data, setData] = useState<Tamu[]>(initialData)
   const [searchTerm, setSearchTerm] = useState("")
   const [isPending, startTransition] = useTransition()
-  const [exportMonth, setExportMonth] = useState<string>("")
+  const [exportMonth, setExportMonth] = useState<string>("all")
   const [exportYear, setExportYear] = useState<string>(String(currentYear))
   const [exportStartDate, setExportStartDate] = useState<string>("")
   const [exportEndDate, setExportEndDate] = useState<string>("")
@@ -140,7 +140,10 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
       
       // Period mode (month/year)
       const matchYear = visitDate.getFullYear() === parseInt(exportYear)
-      const matchMonth = exportMonth ? visitDate.getMonth() + 1 === parseInt(exportMonth) : true
+      const matchMonth =
+  exportMonth === "all"
+    ? true
+    : visitDate.getMonth() + 1 === parseInt(exportMonth)
       return matchYear && matchMonth
     })
   }
@@ -201,9 +204,10 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
       return `${formatDateLabel(exportStartDate)} - ${formatDateLabel(exportEndDate)}`
     }
     
-    const monthLabel = exportMonth 
-      ? MONTHS.find(m => m.value === exportMonth)?.label 
-      : "Semua Bulan"
+   const monthLabel =
+  exportMonth === "all"
+    ? "Semua Bulan"
+    : MONTHS.find(m => m.value === exportMonth)?.label
     return `${monthLabel} ${exportYear}`
   }
 
@@ -607,7 +611,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                                 <SelectValue placeholder="Semua bulan" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">Semua Bulan</SelectItem>
+                                <SelectItem value="all">Semua Bulan</SelectItem>
                                 {MONTHS.map((month) => (
                                   <SelectItem key={month.value} value={month.value}>
                                     {month.label}
