@@ -208,49 +208,56 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
   }
 
   const exportToCSV = () => {
-    setIsExporting(true)
-    const exportData = getExportData()
-    
-    const headers = ["No", "Nama", "Instansi", "No HP", "Tujuan", "Keperluan", "Waktu Kunjungan"]
-    const csvContent = [
-      headers.join(","),
-      ...exportData.map((tamu, index) =>
-        [
-          index + 1,
-          `"${tamu.nama}"`,
-          `"${tamu.instansi || "-"}"`,
-          `"${tamu.no_hp}"`,
-          `"${tamu.tujuan}"`,
-          `"${tamu.keperluan.replace(/"/g, '""')}"`,
-          `"${formatDateForExport(tamu.created_at)}"`,
-        ].join(",")
-      ),
-    ].join("\n")
+    try {
+      setIsExporting(true)
+      const exportData = getExportData()
+      
+      const headers = ["No", "Nama", "Instansi", "No HP", "Tujuan", "Keperluan", "Waktu Kunjungan"]
+      const csvContent = [
+        headers.join(","),
+        ...exportData.map((tamu, index) =>
+          [
+            index + 1,
+            `"${tamu.nama || ""}"`,
+            `"${tamu.instansi || "-"}"`,
+            `"${tamu.no_hp || ""}"`,
+            `"${tamu.tujuan || ""}"`,
+            `"${(tamu.keperluan || "").replace(/"/g, '""')}"`,
+            `"${formatDateForExport(tamu.created_at)}"`,
+          ].join(",")
+        ),
+      ].join("\n")
 
-    const BOM = "\uFEFF"
-    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" })
-    const link = document.createElement("a")
-    const url = URL.createObjectURL(blob)
-    const fileName = `buku-tamu-sma-muhammadiyah-kupang-${getExportPeriodLabel().replace(/ /g, "-").toLowerCase()}.csv`
-    link.setAttribute("href", url)
-    link.setAttribute("download", fileName)
-    link.style.visibility = "hidden"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    
-    setTimeout(() => {
+      const BOM = "\uFEFF"
+      const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" })
+      const link = document.createElement("a")
+      const url = URL.createObjectURL(blob)
+      const fileName = `buku-tamu-sma-muhammadiyah-kupang-${getExportPeriodLabel().replace(/ /g, "-").toLowerCase()}.csv`
+      link.setAttribute("href", url)
+      link.setAttribute("download", fileName)
+      link.style.visibility = "hidden"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      
+      setTimeout(() => {
+        setIsExporting(false)
+        setIsExportDialogOpen(false)
+      }, 500)
+    } catch (error) {
+      console.error("Export CSV error:", error)
+      alert("Terjadi kesalahan saat export CSV. Silakan coba lagi.")
       setIsExporting(false)
-      setIsExportDialogOpen(false)
-    }, 500)
+    }
   }
 
   const exportToPDF = () => {
-    setIsExporting(true)
-    const exportData = getExportData()
-    const periodLabel = getExportPeriodLabel()
-    
-    const htmlContent = `
+    try {
+      setIsExporting(true)
+      const exportData = getExportData()
+      const periodLabel = getExportPeriodLabel()
+      
+      const htmlContent = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -316,11 +323,11 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
               : exportData.map((tamu, index) => `
                 <tr>
                   <td class="no-col">${index + 1}</td>
-                  <td><strong>${tamu.nama}</strong></td>
+                  <td><strong>${tamu.nama || "-"}</strong></td>
                   <td>${tamu.instansi || "-"}</td>
-                  <td>${tamu.no_hp}</td>
-                  <td>${tamu.tujuan}</td>
-                  <td>${tamu.keperluan}</td>
+                  <td>${tamu.no_hp || "-"}</td>
+                  <td>${tamu.tujuan || "-"}</td>
+                  <td>${tamu.keperluan || "-"}</td>
                   <td>${formatDateForExport(tamu.created_at)}</td>
                 </tr>
               `).join("")
@@ -374,6 +381,11 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
       setIsExporting(false)
       setIsExportDialogOpen(false)
     }, 500)
+    } catch (error) {
+      console.error("Export PDF error:", error)
+      alert("Terjadi kesalahan saat export PDF. Silakan coba lagi.")
+      setIsExporting(false)
+    }
   }
 
   // Statistics - using created_at
