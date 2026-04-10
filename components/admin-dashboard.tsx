@@ -607,7 +607,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                                 <SelectValue placeholder="Semua bulan" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">Semua Bulan</SelectItem>
+                                <SelectItem value="all">Semua Bulan</SelectItem>
                                 {MONTHS.map((month) => (
                                   <SelectItem key={month.value} value={month.value}>
                                     {month.label}
