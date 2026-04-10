@@ -35,7 +35,7 @@ export default async function AdminPage() {
   const { data: tamuList, error } = await supabase
     .from("tamu")
     .select("*")
-    .order("waktu_kunjungan", { ascending: false })
+    .order("created_at", { ascending: false })
 
   if (error) {
     console.error("Error fetching tamu:", error)

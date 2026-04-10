@@ -128,7 +128,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
 
   const getExportData = () => {
     return data.filter((tamu) => {
-      const visitDate = new Date(tamu.waktu_kunjungan)
+      const visitDate = new Date(tamu.created_at)
       
       if (exportMode === "range" && exportStartDate && exportEndDate) {
         const startDate = new Date(exportStartDate)
@@ -222,7 +222,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
           `"${tamu.no_hp}"`,
           `"${tamu.tujuan}"`,
           `"${tamu.keperluan.replace(/"/g, '""')}"`,
-          `"${formatDateForExport(tamu.waktu_kunjungan)}"`,
+          `"${formatDateForExport(tamu.created_at)}"`,
         ].join(",")
       ),
     ].join("\n")
@@ -325,7 +325,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                   <td>${tamu.no_hp}</td>
                   <td>${tamu.tujuan}</td>
                   <td>${tamu.keperluan}</td>
-                  <td>${formatDateForExport(tamu.waktu_kunjungan)}</td>
+                  <td>${formatDateForExport(tamu.created_at)}</td>
                 </tr>
               `).join("")
             }
@@ -355,15 +355,14 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
     }, 500)
   }
 
-  // Statistics - using waktu_kunjungan or created_at as fallback
+  // Statistics - using created_at
   const todayCount = useMemo(() => {
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0] // YYYY-MM-DD format
     
     return data.filter((tamu) => {
-      const dateStr = tamu.waktu_kunjungan || tamu.created_at
-      if (!dateStr) return false
-      const visitDateStr = new Date(dateStr).toISOString().split('T')[0]
+      if (!tamu.created_at) return false
+      const visitDateStr = new Date(tamu.created_at).toISOString().split('T')[0]
       return visitDateStr === todayStr
     }).length
   }, [data])
@@ -374,9 +373,8 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
     const currentYear = now.getFullYear()
     
     return data.filter((tamu) => {
-      const dateStr = tamu.waktu_kunjungan || tamu.created_at
-      if (!dateStr) return false
-      const date = new Date(dateStr)
+      if (!tamu.created_at) return false
+      const date = new Date(tamu.created_at)
       return date.getMonth() === currentMonth && date.getFullYear() === currentYear
     }).length
   }, [data])
@@ -386,9 +384,8 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
     const currentYear = now.getFullYear()
     
     return data.filter((tamu) => {
-      const dateStr = tamu.waktu_kunjungan || tamu.created_at
-      if (!dateStr) return false
-      const date = new Date(dateStr)
+      if (!tamu.created_at) return false
+      const date = new Date(tamu.created_at)
       return date.getFullYear() === currentYear
     }).length
   }, [data])
@@ -734,7 +731,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                       </div>
                       <div className="flex items-center gap-2 pt-1 border-t mt-2">
                         <Clock className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">{formatDate(tamu.waktu_kunjungan)}</span>
+                        <span className="text-muted-foreground">{formatDate(tamu.created_at)}</span>
                       </div>
                     </div>
                   </Card>
@@ -789,7 +786,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                           {tamu.keperluan}
                         </TableCell>
                         <TableCell className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
-                          {formatDate(tamu.waktu_kunjungan)}
+                          {formatDate(tamu.created_at)}
                         </TableCell>
                         <TableCell>
                           <AlertDialog>
