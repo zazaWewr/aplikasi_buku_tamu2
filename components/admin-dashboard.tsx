@@ -98,7 +98,7 @@ const MONTHS = [
 ]
 
 const currentYear = new Date().getFullYear()
-const YEARS = Array.from({ length: 5 }, (_, i) => ({
+const YEARS = Array.from({ length: 10 }, (_, i) => ({
   value: String(currentYear - i),
   label: String(currentYear - i),
 }))
@@ -253,6 +253,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
     const printWindow = window.open("", "_blank")
     if (!printWindow) {
       setIsExporting(false)
+      alert("Popup diblokir! Mohon izinkan popup untuk export PDF.")
       return
     }
 
@@ -354,31 +355,41 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
     }, 500)
   }
 
-  // Statistics
+  // Statistics - using waktu_kunjungan or created_at as fallback
   const todayCount = useMemo(() => {
     const today = new Date()
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+    const todayStr = today.toISOString().split('T')[0] // YYYY-MM-DD format
     
     return data.filter((tamu) => {
-      const visitDate = new Date(tamu.waktu_kunjungan)
-      return visitDate >= todayStart && visitDate < todayEnd
+      const dateStr = tamu.waktu_kunjungan || tamu.created_at
+      if (!dateStr) return false
+      const visitDateStr = new Date(dateStr).toISOString().split('T')[0]
+      return visitDateStr === todayStr
     }).length
   }, [data])
 
   const thisMonthCount = useMemo(() => {
     const now = new Date()
+    const currentMonth = now.getMonth()
+    const currentYear = now.getFullYear()
+    
     return data.filter((tamu) => {
-      const date = new Date(tamu.waktu_kunjungan)
-      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+      const dateStr = tamu.waktu_kunjungan || tamu.created_at
+      if (!dateStr) return false
+      const date = new Date(dateStr)
+      return date.getMonth() === currentMonth && date.getFullYear() === currentYear
     }).length
   }, [data])
 
   const thisYearCount = useMemo(() => {
     const now = new Date()
+    const currentYear = now.getFullYear()
+    
     return data.filter((tamu) => {
-      const date = new Date(tamu.waktu_kunjungan)
-      return date.getFullYear() === now.getFullYear()
+      const dateStr = tamu.waktu_kunjungan || tamu.created_at
+      if (!dateStr) return false
+      const date = new Date(dateStr)
+      return date.getFullYear() === currentYear
     }).length
   }, [data])
 
