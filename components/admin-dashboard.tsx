@@ -109,6 +109,9 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
   const [isPending, startTransition] = useTransition()
   const [exportMonth, setExportMonth] = useState<string>("")
   const [exportYear, setExportYear] = useState<string>(String(currentYear))
+  const [exportStartDate, setExportStartDate] = useState<string>("")
+  const [exportEndDate, setExportEndDate] = useState<string>("")
+  const [exportMode, setExportMode] = useState<"period" | "range">("period")
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
   const router = useRouter()
@@ -125,9 +128,19 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
 
   const getExportData = () => {
     return data.filter((tamu) => {
-      const date = new Date(tamu.waktu_kunjungan)
-      const matchYear = date.getFullYear() === parseInt(exportYear)
-      const matchMonth = exportMonth ? date.getMonth() + 1 === parseInt(exportMonth) : true
+      const visitDate = new Date(tamu.waktu_kunjungan)
+      
+      if (exportMode === "range" && exportStartDate && exportEndDate) {
+        const startDate = new Date(exportStartDate)
+        startDate.setHours(0, 0, 0, 0)
+        const endDate = new Date(exportEndDate)
+        endDate.setHours(23, 59, 59, 999)
+        return visitDate >= startDate && visitDate <= endDate
+      }
+      
+      // Period mode (month/year)
+      const matchYear = visitDate.getFullYear() === parseInt(exportYear)
+      const matchMonth = exportMonth ? visitDate.getMonth() + 1 === parseInt(exportMonth) : true
       return matchYear && matchMonth
     })
   }
@@ -174,6 +187,20 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
   }
 
   const getExportPeriodLabel = () => {
+    if (exportMode === "range") {
+      if (!exportStartDate || !exportEndDate) {
+        return "Pilih tanggal mulai dan akhir"
+      }
+      const formatDateLabel = (dateStr: string) => {
+        return new Date(dateStr).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        })
+      }
+      return `${formatDateLabel(exportStartDate)} - ${formatDateLabel(exportEndDate)}`
+    }
+    
     const monthLabel = exportMonth 
       ? MONTHS.find(m => m.value === exportMonth)?.label 
       : "Semua Bulan"
@@ -328,22 +355,32 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
   }
 
   // Statistics
-  const todayCount = data.filter((tamu) => {
-    const today = new Date().toDateString()
-    return new Date(tamu.waktu_kunjungan).toDateString() === today
-  }).length
+  const todayCount = useMemo(() => {
+    const today = new Date()
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+    
+    return data.filter((tamu) => {
+      const visitDate = new Date(tamu.waktu_kunjungan)
+      return visitDate >= todayStart && visitDate < todayEnd
+    }).length
+  }, [data])
 
-  const thisWeekCount = data.filter((tamu) => {
-    const weekAgo = new Date()
-    weekAgo.setDate(weekAgo.getDate() - 7)
-    return new Date(tamu.waktu_kunjungan) >= weekAgo
-  }).length
-
-  const thisMonthCount = data.filter((tamu) => {
-    const date = new Date(tamu.waktu_kunjungan)
+  const thisMonthCount = useMemo(() => {
     const now = new Date()
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
-  }).length
+    return data.filter((tamu) => {
+      const date = new Date(tamu.waktu_kunjungan)
+      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+    }).length
+  }, [data])
+
+  const thisYearCount = useMemo(() => {
+    const now = new Date()
+    return data.filter((tamu) => {
+      const date = new Date(tamu.waktu_kunjungan)
+      return date.getFullYear() === now.getFullYear()
+    }).length
+  }, [data])
 
   return (
     <div className="min-h-screen bg-background">
@@ -412,23 +449,23 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
           <Card className="animate-fade-in animate-delay-200 border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="p-3 sm:pb-2 sm:p-6">
               <div className="flex items-center justify-between gap-2">
-                <CardDescription className="text-muted-foreground text-xs sm:text-sm">Minggu Ini</CardDescription>
+                <CardDescription className="text-muted-foreground text-xs sm:text-sm">Bulan Ini</CardDescription>
                 <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-chart-3/20 flex items-center justify-center flex-shrink-0">
                   <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-chart-3" />
                 </div>
               </div>
-              <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">{thisWeekCount}</CardTitle>
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">{thisMonthCount}</CardTitle>
             </CardHeader>
           </Card>
           <Card className="animate-fade-in animate-delay-300 border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="p-3 sm:pb-2 sm:p-6">
               <div className="flex items-center justify-between gap-2">
-                <CardDescription className="text-muted-foreground text-xs sm:text-sm">Bulan Ini</CardDescription>
+                <CardDescription className="text-muted-foreground text-xs sm:text-sm">Tahun Ini</CardDescription>
                 <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-chart-4/20 flex items-center justify-center flex-shrink-0">
                   <CalendarDays className="h-4 w-4 sm:h-5 sm:w-5 text-chart-4" />
                 </div>
               </div>
-              <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">{thisMonthCount}</CardTitle>
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">{thisYearCount}</CardTitle>
             </CardHeader>
           </Card>
         </div>
@@ -478,37 +515,93 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                       </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
+                      {/* Mode Selection */}
                       <div className="grid gap-2">
-                        <Label htmlFor="export-year">Tahun</Label>
-                        <Select value={exportYear} onValueChange={setExportYear}>
-                          <SelectTrigger id="export-year">
-                            <SelectValue placeholder="Pilih tahun" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {YEARS.map((year) => (
-                              <SelectItem key={year.value} value={year.value}>
-                                {year.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label>Mode Pilih Tanggal</Label>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant={exportMode === "period" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setExportMode("period")}
+                            className="flex-1"
+                          >
+                            <CalendarDays className="h-4 w-4 mr-2" />
+                            Bulan/Tahun
+                          </Button>
+                          <Button
+                            type="button"
+                            variant={exportMode === "range" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setExportMode("range")}
+                            className="flex-1"
+                          >
+                            <CalendarDays className="h-4 w-4 mr-2" />
+                            Rentang Tanggal
+                          </Button>
+                        </div>
                       </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="export-month">Bulan (Opsional)</Label>
-                        <Select value={exportMonth} onValueChange={setExportMonth}>
-                          <SelectTrigger id="export-month">
-                            <SelectValue placeholder="Semua bulan" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">Semua Bulan</SelectItem>
-                            {MONTHS.map((month) => (
-                              <SelectItem key={month.value} value={month.value}>
-                                {month.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+
+                      {exportMode === "period" ? (
+                        <>
+                          <div className="grid gap-2">
+                            <Label htmlFor="export-year">Tahun</Label>
+                            <Select value={exportYear} onValueChange={setExportYear}>
+                              <SelectTrigger id="export-year">
+                                <SelectValue placeholder="Pilih tahun" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {YEARS.map((year) => (
+                                  <SelectItem key={year.value} value={year.value}>
+                                    {year.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="export-month">Bulan (Opsional)</Label>
+                            <Select value={exportMonth} onValueChange={setExportMonth}>
+                              <SelectTrigger id="export-month">
+                                <SelectValue placeholder="Semua bulan" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="">Semua Bulan</SelectItem>
+                                {MONTHS.map((month) => (
+                                  <SelectItem key={month.value} value={month.value}>
+                                    {month.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="grid gap-2">
+                            <Label htmlFor="export-start-date">Tanggal Mulai</Label>
+                            <Input
+                              id="export-start-date"
+                              type="date"
+                              value={exportStartDate}
+                              onChange={(e) => setExportStartDate(e.target.value)}
+                              className="w-full"
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="export-end-date">Tanggal Akhir</Label>
+                            <Input
+                              id="export-end-date"
+                              type="date"
+                              value={exportEndDate}
+                              onChange={(e) => setExportEndDate(e.target.value)}
+                              min={exportStartDate}
+                              className="w-full"
+                            />
+                          </div>
+                        </>
+                      )}
+
                       <div className="p-3 rounded-lg bg-muted/50 border">
                         <p className="text-sm text-muted-foreground">
                           Data yang akan di-export: <strong className="text-foreground">{getExportData().length} pengunjung</strong>
@@ -522,7 +615,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                       <Button
                         variant="outline"
                         onClick={exportToCSV}
-                        disabled={isExporting}
+                        disabled={isExporting || (exportMode === "range" && (!exportStartDate || !exportEndDate))}
                         className="w-full sm:w-auto"
                       >
                         <FileSpreadsheet className="h-4 w-4 mr-2" />
@@ -530,7 +623,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                       </Button>
                       <Button
                         onClick={exportToPDF}
-                        disabled={isExporting}
+                        disabled={isExporting || (exportMode === "range" && (!exportStartDate || !exportEndDate))}
                         className="w-full sm:w-auto shadow-md shadow-primary/25"
                       >
                         <FileText className="h-4 w-4 mr-2" />
