@@ -250,24 +250,17 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
     const exportData = getExportData()
     const periodLabel = getExportPeriodLabel()
     
-    const printWindow = window.open("", "_blank")
-    if (!printWindow) {
-      setIsExporting(false)
-      alert("Popup diblokir! Mohon izinkan popup untuk export PDF.")
-      return
-    }
-
     const htmlContent = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>Buku Tamu - SMA Muhammadiyah Kupang - ${periodLabel}</title>
+        <meta charset="UTF-8">
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #1a1a1a; }
           .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #166534; }
           .logo { font-size: 24px; font-weight: bold; color: #166534; margin-bottom: 5px; }
-          .school-name { font-size: 20px; font-weight: bold; color: #1a1a1a; }
           .subtitle { font-size: 14px; color: #666; margin-top: 5px; }
           .period { font-size: 16px; font-weight: 600; color: #166534; margin-top: 10px; padding: 8px 16px; background: #f0fdf4; border-radius: 8px; display: inline-block; }
           .stats { display: flex; justify-content: center; gap: 30px; margin-bottom: 25px; }
@@ -278,17 +271,20 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
           th { background: #166534; color: white; padding: 12px 8px; text-align: left; font-weight: 600; }
           td { padding: 10px 8px; border-bottom: 1px solid #e5e7eb; }
           tr:nth-child(even) { background: #f9fafb; }
-          tr:hover { background: #f0fdf4; }
           .no-col { width: 40px; text-align: center; }
           .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #666; padding-top: 20px; border-top: 1px solid #e5e7eb; }
           .print-date { margin-bottom: 5px; }
+          .print-btn { display: block; margin: 20px auto; padding: 12px 30px; background: #166534; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+          .print-btn:hover { background: #14532d; }
           @media print {
             body { padding: 10px; }
-            .no-print { display: none; }
+            .no-print { display: none !important; }
           }
         </style>
       </head>
       <body>
+        <button class="print-btn no-print" onclick="window.print()">Cetak / Simpan PDF</button>
+        
         <div class="header">
           <div class="logo">SMA MUHAMMADIYAH KUPANG</div>
           <div class="subtitle">Buku Tamu Digital</div>
@@ -316,7 +312,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
           </thead>
           <tbody>
             ${exportData.length === 0 
-              ? `<tr><td colspan="7" style="text-align: center; padding: 40px; color: #666;">Tidak ada data pengunjung pada periode ini</td></tr>`
+              ? '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #666;">Tidak ada data pengunjung pada periode ini</td></tr>'
               : exportData.map((tamu, index) => `
                 <tr>
                   <td class="no-col">${index + 1}</td>
@@ -336,18 +332,43 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
           <div class="print-date">Dicetak pada: ${formatDateForExport(new Date().toISOString())}</div>
           <div>SMA Muhammadiyah Kupang - Buku Tamu Digital</div>
         </div>
-
-        <script>
-          window.onload = function() {
-            window.print();
-          }
-        </script>
       </body>
       </html>
     `
 
-    printWindow.document.write(htmlContent)
-    printWindow.document.close()
+    // Try opening new window first
+    const printWindow = window.open("", "_blank")
+    
+    if (printWindow) {
+      printWindow.document.write(htmlContent)
+      printWindow.document.close()
+    } else {
+      // Fallback: create iframe and print
+      const iframe = document.createElement("iframe")
+      iframe.style.position = "fixed"
+      iframe.style.right = "0"
+      iframe.style.bottom = "0"
+      iframe.style.width = "0"
+      iframe.style.height = "0"
+      iframe.style.border = "none"
+      document.body.appendChild(iframe)
+      
+      const iframeDoc = iframe.contentWindow?.document
+      if (iframeDoc) {
+        iframeDoc.open()
+        iframeDoc.write(htmlContent)
+        iframeDoc.close()
+        
+        setTimeout(() => {
+          iframe.contentWindow?.print()
+          setTimeout(() => {
+            document.body.removeChild(iframe)
+          }, 1000)
+        }, 500)
+      } else {
+        alert("Tidak dapat membuat preview. Mohon izinkan popup di browser Anda.")
+      }
+    }
     
     setTimeout(() => {
       setIsExporting(false)
