@@ -5,7 +5,6 @@ export interface Tamu {
   no_hp: string
   tujuan: string
   keperluan: string
-  waktu_kunjungan: string
   created_at: string
 }
 
