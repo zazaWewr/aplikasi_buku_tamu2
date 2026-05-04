@@ -38,6 +38,7 @@ export default function BukuTamuPage() {
     no_hp: "",
     tujuan: "",
     keperluan: "",
+    email: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -57,6 +58,8 @@ export default function BukuTamuPage() {
           no_hp: formData.no_hp,
           tujuan: formData.tujuan,
           keperluan: formData.keperluan,
+          email: formData.email,
+          status: "pending",
         },
       ])
 
@@ -69,6 +72,7 @@ export default function BukuTamuPage() {
         no_hp: "",
         tujuan: "",
         keperluan: "",
+        email: "",
       })
 
       setTimeout(() => setIsSuccess(false), 5000)
@@ -209,6 +213,23 @@ export default function BukuTamuPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, instansi: e.target.value })
                     }
+                    className="h-10 sm:h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm sm:text-base"
+                  />
+                </div>
+
+                <div className="space-y-1.5 sm:space-y-2 animate-fade-in animate-delay-200">
+                  <Label htmlFor="email" className="text-foreground font-medium text-sm">
+                    Email <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Contoh: nama@email.com"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    required
                     className="h-10 sm:h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm sm:text-base"
                   />
                 </div>
