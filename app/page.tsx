@@ -36,6 +36,7 @@ export default function BukuTamuPage() {
     nama: "",
     instansi: "",
     no_hp: "",
+    email: "",
     tujuan: "",
     keperluan: "",
   })
@@ -55,6 +56,7 @@ export default function BukuTamuPage() {
           nama: formData.nama,
           instansi: formData.instansi || null,
           no_hp: formData.no_hp,
+          email: formData.email,
           tujuan: formData.tujuan,
           keperluan: formData.keperluan,
         },
@@ -67,6 +69,7 @@ export default function BukuTamuPage() {
         nama: "",
         instansi: "",
         no_hp: "",
+        email: "",
         tujuan: "",
         keperluan: "",
       })
@@ -170,7 +173,7 @@ export default function BukuTamuPage() {
                 <div>
                   <p className="font-semibold">Data berhasil disimpan!</p>
                   <p className="text-sm opacity-80">
-                    Terima kasih telah mengisi buku tamu.
+                    Silakan tunggu verifikasi dari admin. Kami akan mengirim notifikasi ke email Anda.
                   </p>
                 </div>
               </div>
@@ -233,31 +236,48 @@ export default function BukuTamuPage() {
                 </div>
 
                 <div className="space-y-1.5 sm:space-y-2 animate-fade-in animate-delay-400">
-                  <Label htmlFor="tujuan" className="text-foreground font-medium text-sm">
-                    Tujuan Bertemu <span className="text-destructive">*</span>
+                  <Label htmlFor="email" className="text-foreground font-medium text-sm">
+                    Email <span className="text-destructive">*</span>
                   </Label>
-                  <Select
-                    value={formData.tujuan}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, tujuan: value })
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Contoh: nama@email.com"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
                     }
                     required
-                  >
-                    <SelectTrigger id="tujuan" className="h-10 sm:h-11 text-sm sm:text-base">
-                      <SelectValue placeholder="Pilih tujuan bertemu" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TUJUAN_OPTIONS.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    className="h-10 sm:h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 text-sm sm:text-base"
+                  />
                 </div>
               </div>
 
               <div className="space-y-1.5 sm:space-y-2 animate-fade-in animate-delay-500">
+                <Label htmlFor="tujuan" className="text-foreground font-medium text-sm">
+                  Tujuan Bertemu <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.tujuan}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, tujuan: value })
+                  }
+                  required
+                >
+                  <SelectTrigger id="tujuan" className="h-10 sm:h-11 text-sm sm:text-base">
+                    <SelectValue placeholder="Pilih tujuan bertemu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TUJUAN_OPTIONS.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5 sm:space-y-2 animate-fade-in animate-delay-600">
                 <Label htmlFor="keperluan" className="text-foreground font-medium text-sm">
                   Keperluan <span className="text-destructive">*</span>
                 </Label>

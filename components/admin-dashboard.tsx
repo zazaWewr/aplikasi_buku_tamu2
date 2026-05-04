@@ -57,6 +57,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { Textarea } from "@/components/ui/textarea"
 import {
   GraduationCap,
   Download,
@@ -72,6 +73,8 @@ import {
   TrendingUp,
   Clock,
   Filter,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react"
 import type { Tamu } from "@/lib/types"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -114,6 +117,10 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
   const [exportMode, setExportMode] = useState<"period" | "range">("period")
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
+  const [verificationFilter, setVerificationFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all')
+  const [selectedVerification, setSelectedVerification] = useState<Tamu | null>(null)
+  const [rejectionReason, setRejectionReason] = useState("")
+  const [isVerifyingDuringAction, setIsVerifyingDuringAction] = useState(false)
   const router = useRouter()
 
   const filteredData = useMemo(() => {
@@ -427,6 +434,55 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
     }).length
   }, [data])
 
+  const pendingVerificationCount = useMemo(() => {
+    return data.filter((tamu) => tamu.status_verifikasi === 'pending').length
+  }, [data])
+
+  const handleVerificationAction = async (tamuId: string, action: 'approve' | 'reject') => {
+    setIsVerifyingDuringAction(true)
+    try {
+      const payload = {
+        tamuId,
+        action,
+        ...(action === 'reject' && { rejectionReason }),
+      }
+
+      const response = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to process verification')
+      }
+
+      // Update local data
+      setData((prev) =>
+        prev.map((item) =>
+          item.id === tamuId
+            ? {
+                ...item,
+                status_verifikasi: action === 'approve' ? 'approved' : 'rejected',
+                rejection_reason: action === 'reject' ? rejectionReason : null,
+              }
+            : item
+        )
+      )
+
+      setSelectedVerification(null)
+      setRejectionReason("")
+      
+      alert(`Kunjungan ${action === 'approve' ? 'disetujui' : 'ditolak'} dan email telah dikirim!`)
+    } catch (error) {
+      console.error('[Verification Error]', error)
+      alert(`Gagal: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setIsVerifyingDuringAction(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Decorative Background */}
@@ -514,6 +570,140 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
             </CardHeader>
           </Card>
         </div>
+
+        {/* Pending Verifications Section */}
+        {pendingVerificationCount > 0 && (
+          <Card className="border-0 shadow-lg animate-scale-in overflow-hidden mb-4 sm:mb-8 border-l-4 border-l-yellow-500">
+            <div className="h-1 bg-gradient-to-r from-yellow-500/60 via-yellow-500/40 to-yellow-500/20" />
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-foreground text-base sm:text-lg">
+                    <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600" />
+                    Menunggu Verifikasi
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {pendingVerificationCount} kunjungan menunggu persetujuan Anda
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+              <div className="space-y-2 sm:space-y-3">
+                {data
+                  .filter((tamu) => tamu.status_verifikasi === 'pending')
+                  .map((tamu) => (
+                    <div
+                      key={tamu.id}
+                      className="flex items-center justify-between p-3 rounded-lg bg-yellow-50/50 dark:bg-yellow-950/20 border border-yellow-200/50 dark:border-yellow-800/30 hover:bg-yellow-50 dark:hover:bg-yellow-950/30 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground text-sm sm:text-base truncate">
+                          {tamu.nama}
+                        </p>
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                          {tamu.email}
+                        </p>
+                      </div>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedVerification(tamu)}
+                            className="ml-2 h-8 text-xs sm:text-sm"
+                          >
+                            Review
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Verifikasi Kunjungan</DialogTitle>
+                            <DialogDescription>
+                              Review dan setujui atau tolak kunjungan ini
+                            </DialogDescription>
+                          </DialogHeader>
+                          {selectedVerification && (
+                            <div className="grid gap-4 py-4">
+                              <div>
+                                <Label className="text-foreground font-semibold">Nama</Label>
+                                <p className="text-sm text-muted-foreground">{selectedVerification.nama}</p>
+                              </div>
+                              <div>
+                                <Label className="text-foreground font-semibold">Email</Label>
+                                <p className="text-sm text-muted-foreground break-all">{selectedVerification.email}</p>
+                              </div>
+                              <div>
+                                <Label className="text-foreground font-semibold">Nomor HP</Label>
+                                <p className="text-sm text-muted-foreground">{selectedVerification.no_hp}</p>
+                              </div>
+                              <div>
+                                <Label className="text-foreground font-semibold">Instansi</Label>
+                                <p className="text-sm text-muted-foreground">{selectedVerification.instansi || '-'}</p>
+                              </div>
+                              <div>
+                                <Label className="text-foreground font-semibold">Tujuan</Label>
+                                <p className="text-sm text-muted-foreground">{selectedVerification.tujuan}</p>
+                              </div>
+                              <div>
+                                <Label className="text-foreground font-semibold">Keperluan</Label>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{selectedVerification.keperluan}</p>
+                              </div>
+                              <div>
+                                <Label className="text-foreground font-semibold">Waktu Kunjungan</Label>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(selectedVerification.created_at).toLocaleString('id-ID')}
+                                </p>
+                              </div>
+
+                              {/* Rejection Reason */}
+                              <div>
+                                <Label htmlFor="rejection" className="text-foreground font-semibold">
+                                  Alasan Penolakan (jika ditolak)
+                                </Label>
+                                <Textarea
+                                  id="rejection"
+                                  placeholder="Masukkan alasan penolakan..."
+                                  value={rejectionReason}
+                                  onChange={(e) => setRejectionReason(e.target.value)}
+                                  className="resize-none text-sm"
+                                  rows={3}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          <DialogFooter className="flex gap-2 flex-row sm:justify-end">
+                            <Button
+                              variant="destructive"
+                              onClick={() =>
+                                selectedVerification &&
+                                rejectionReason &&
+                                handleVerificationAction(selectedVerification.id, 'reject')
+                              }
+                              disabled={!rejectionReason || isVerifyingDuringAction}
+                              size="sm"
+                            >
+                              {isVerifyingDuringAction ? 'Memproses...' : 'Tolak'}
+                            </Button>
+                            <Button
+                              onClick={() =>
+                                selectedVerification && handleVerificationAction(selectedVerification.id, 'approve')
+                              }
+                              disabled={isVerifyingDuringAction}
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              {isVerifyingDuringAction ? 'Memproses...' : 'Setujui'}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Data Table */}
         <Card className="border-0 shadow-xl animate-scale-in overflow-hidden">
@@ -787,13 +977,14 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                     <TableHead className="font-semibold text-foreground text-xs sm:text-sm">Tujuan</TableHead>
                     <TableHead className="font-semibold text-foreground text-xs sm:text-sm">Keperluan</TableHead>
                     <TableHead className="font-semibold text-foreground text-xs sm:text-sm">Waktu</TableHead>
+                    <TableHead className="font-semibold text-foreground text-xs sm:text-sm">Status</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredData.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-12">
+                      <TableCell colSpan={8} className="text-center py-12">
                         <div className="flex flex-col items-center gap-3">
                           <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
                             <Users className="h-8 w-8 text-muted-foreground" />
@@ -824,6 +1015,25 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
                         </TableCell>
                         <TableCell className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                           {formatDate(tamu.created_at)}
+                        </TableCell>
+                        <TableCell>
+                          {tamu.status_verifikasi === 'pending' && (
+                            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950/30 dark:text-yellow-400 dark:border-yellow-800 text-xs">
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              Pending
+                            </Badge>
+                          )}
+                          {tamu.status_verifikasi === 'approved' && (
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800 text-xs">
+                              <CheckCircle2 className="h-3 w-3 mr-1" />
+                              Approved
+                            </Badge>
+                          )}
+                          {tamu.status_verifikasi === 'rejected' && (
+                            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800 text-xs">
+                              Rejected
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell>
                           <AlertDialog>
