@@ -57,24 +57,10 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import {
-  GraduationCap,
-  Download,
-  LogOut,
-  MoreVertical,
-  RefreshCw,
-  Search,
-  Trash2,
-  Users,
-  CalendarDays,
-  FileSpreadsheet,
-  FileText,
-  TrendingUp,
-  Clock,
-  Filter,
-} from "lucide-react"
+import { Check, X, Clock, Filter } from "lucide-react"
 import type { Tamu } from "@/lib/types"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { VerificationTab } from "@/components/verification-tab"
 import Link from "next/link"
 
 interface AdminDashboardProps {
@@ -114,6 +100,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
   const [exportMode, setExportMode] = useState<"period" | "range">("period")
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
+  const [activeTab, setActiveTab] = useState<"all" | "verification">("verification")
   const router = useRouter()
 
   const filteredData = useMemo(() => {
