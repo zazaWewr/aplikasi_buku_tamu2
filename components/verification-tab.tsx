@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import React, { useState, useTransition } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,42 +46,53 @@ import type { Tamu } from "@/lib/types"
 import { approveTamu, rejectTamu } from "@/lib/actions/verification"
 
 interface VerificationTabProps {
-  data: Tamu[]
   userEmail: string
-  onStatusChange: () => void
+  onDataRefresh: () => void
 }
 
 export function VerificationTab({
-  data,
   userEmail,
-  onStatusChange,
+  onDataRefresh,
 }: VerificationTabProps) {
+  const [data, setData] = useState<Tamu[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
   const [rejectReason, setRejectReason] = useState("")
   const [selectedTamuId, setSelectedTamuId] = useState<string | null>(null)
 
-  // Get today's pending guests
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
+  // Fetch today's pending guests on mount
+  React.useEffect(() => {
+    const fetchPendingGuests = async () => {
+      const { createClient } = await import("@/lib/supabase/client")
+      const supabase = createClient()
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
 
-  const pendingToday = data.filter((tamu) => {
-    const created = new Date(tamu.created_at)
-    return (
-      tamu.status === "pending" &&
-      created >= today &&
-      created < tomorrow
-    )
-  })
+      const { data: tamu, error } = await supabase
+        .from("tamu")
+        .select("*")
+        .gte("created_at", today.toISOString())
+        .lt("created_at", tomorrow.toISOString())
+        .order("created_at", { ascending: false })
 
-  const acceptedCount = pendingToday.filter(
+      if (!error && tamu) {
+        setData(tamu)
+      }
+      setIsLoading(false)
+    }
+
+    fetchPendingGuests()
+  }, [])
+
+  const acceptedCount = data.filter(
     (t) => t.status === "accepted"
   ).length
-  const rejectedCount = pendingToday.filter(
+  const rejectedCount = data.filter(
     (t) => t.status === "rejected"
   ).length
-  const pendingCount = pendingToday.filter(
+  const pendingCount = data.filter(
     (t) => t.status === "pending"
   ).length
 
@@ -90,7 +101,8 @@ export function VerificationTab({
       const result = await approveTamu(tamuId, userEmail)
       if (result.success) {
         setSelectedTamuId(null)
-        onStatusChange()
+        setData(data.map(t => t.id === tamuId ? { ...t, status: "accepted" } : t))
+        onDataRefresh()
       }
     })
   }
@@ -105,7 +117,8 @@ export function VerificationTab({
       if (result.success) {
         setRejectReason("")
         setSelectedTamuId(null)
-        onStatusChange()
+        setData(data.map(t => t.id === tamuId ? { ...t, status: "rejected", rejection_reason: rejectReason } : t))
+        onDataRefresh()
       }
     })
   }
@@ -126,7 +139,7 @@ export function VerificationTab({
               {pendingCount}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Dari {pendingToday.length} hari ini
+              Dari {data.length} hari ini
             </p>
           </CardContent>
         </Card>
@@ -175,7 +188,7 @@ export function VerificationTab({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {pendingToday.length === 0 ? (
+          {data.length === 0 ? (
             <div className="text-center py-10">
               <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
               <p className="text-muted-foreground">
@@ -196,7 +209,7 @@ export function VerificationTab({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pendingToday.map((tamu) => (
+                  {data.map((tamu) => (
                     <TableRow key={tamu.id}>
                       <TableCell className="font-medium">
                         {tamu.nama}

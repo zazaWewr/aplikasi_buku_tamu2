@@ -57,7 +57,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Check, X, Clock, Filter } from "lucide-react"
+import { Check, X, Clock, Filter, GraduationCap, LogOut, RefreshCw, Users } from "lucide-react"
 import type { Tamu } from "@/lib/types"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { VerificationTab } from "@/components/verification-tab"
@@ -502,7 +502,43 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
           </Card>
         </div>
 
+        {/* Tabs Navigation */}
+        <div className="flex gap-2 mb-6 border-b border-border">
+          <button
+            onClick={() => setActiveTab("verification")}
+            className={`px-3 sm:px-4 py-2 sm:py-3 font-medium text-sm sm:text-base transition-all duration-200 border-b-2 ${
+              activeTab === "verification"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              <span>Verifikasi Tamu</span>
+            </div>
+          </button>
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`px-3 sm:px-4 py-2 sm:py-3 font-medium text-sm sm:text-base transition-all duration-200 border-b-2 ${
+              activeTab === "all"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              <span>Daftar Semua</span>
+            </div>
+          </button>
+        </div>
+
+        {/* Verification Tab Content */}
+        {activeTab === "verification" && (
+          <VerificationTab userEmail={userEmail} onDataRefresh={handleRefresh} />
+        )}
+
         {/* Data Table */}
+        {activeTab === "all" && (
         <Card className="border-0 shadow-xl animate-scale-in overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-primary via-primary/80 to-accent" />
           <CardHeader className="p-3 sm:p-6">
@@ -858,6 +894,7 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
             </div>
           </CardContent>
         </Card>
+        )}
       </main>
     </div>
   )
