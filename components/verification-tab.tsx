@@ -63,6 +63,8 @@ export function VerificationTab({
   // Fetch today's pending guests on mount
   React.useEffect(() => {
     const fetchPendingGuests = async () => {
+      if (typeof window === "undefined") return
+      
       const { createClient } = await import("@/lib/supabase/client")
       const supabase = createClient()
       const today = new Date()
