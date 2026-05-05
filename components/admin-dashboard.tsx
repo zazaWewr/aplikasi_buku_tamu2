@@ -136,8 +136,16 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
   }
 
   const handleRefresh = () => {
-    startTransition(() => {
-      router.refresh()
+    startTransition(async () => {
+      const { createClient } = await import("@/lib/supabase/client")
+      const supabase = createClient()
+      const { data: newData, error } = await supabase
+        .from("tamu")
+        .select("*")
+        .order("created_at", { ascending: false })
+      if (!error && newData) {
+        setData(newData)
+      }
     })
   }
 
