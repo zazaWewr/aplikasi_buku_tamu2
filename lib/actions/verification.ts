@@ -37,7 +37,7 @@ export async function approveTamu(
 
     // Send email notification
     const emailResult = await resend.emails.send({
-      from: "noreply@aplikasi-buku-tamu.com",
+      from: "onboarding@resend.dev",
       to: tamuData.email,
       subject: "Kunjungan Anda Telah Disetujui",
       html: `
@@ -112,7 +112,7 @@ export async function rejectTamu(
 
     // Send email notification
     const emailResult = await resend.emails.send({
-      from: "noreply@aplikasi-buku-tamu.com",
+      from: "onboarding@resend.dev",
       to: tamuData.email,
       subject: "Pemberitahuan Kunjungan Anda",
       html: `
