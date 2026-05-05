@@ -115,7 +115,7 @@ export default function BukuTamuPage() {
           </div>
         </AlertDialogContent>
       </AlertDialog>
-    <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background">
       {/* Decorative Header Background */}
       <div className="absolute inset-x-0 top-0 h-72 bg-primary/5 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
