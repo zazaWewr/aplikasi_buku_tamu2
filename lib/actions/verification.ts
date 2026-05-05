@@ -38,7 +38,7 @@ export async function approveTamu(
     // Send email notification
     const emailResult = await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: tamuData.email,
+      to: "mariaremama962@gmail.com",
       subject: "Kunjungan Anda Telah Disetujui",
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
