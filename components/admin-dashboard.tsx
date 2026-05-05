@@ -57,7 +57,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Check, X, Clock, Filter, GraduationCap, LogOut, RefreshCw, Users } from "lucide-react"
+import { Check, X, Clock, Filter, GraduationCap, LogOut, RefreshCw, Users, Download, CalendarDays, FileSpreadsheet, FileText, MoreVertical, Trash2 } from "lucide-react"
 import type { Tamu } from "@/lib/types"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { VerificationTab } from "@/components/verification-tab"

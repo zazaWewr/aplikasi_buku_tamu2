@@ -17,6 +17,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CheckCircle2, Loader2, GraduationCap, Settings, Users, Clock, BookOpen } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import Link from "next/link"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const TUJUAN_OPTIONS = [
   "Kepala Sekolah",
@@ -42,6 +50,7 @@ export default function BukuTamuPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,6 +75,7 @@ export default function BukuTamuPage() {
       if (insertError) throw insertError
 
       setIsSuccess(true)
+      setShowSuccessDialog(true)
       setFormData({
         nama: "",
         instansi: "",
@@ -74,8 +84,6 @@ export default function BukuTamuPage() {
         keperluan: "",
         email: "",
       })
-
-      setTimeout(() => setIsSuccess(false), 5000)
     } catch (err) {
       console.error("Error submitting form:", err)
       setError("Gagal menyimpan data. Silakan coba lagi.")
@@ -85,6 +93,28 @@ export default function BukuTamuPage() {
   }
 
   return (
+    <>
+      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <AlertDialogContent className="max-w-sm">
+          <AlertDialogHeader>
+            <div className="flex justify-center mb-4">
+              <CheckCircle2 className="h-12 w-12 text-green-500 animate-scale-in" />
+            </div>
+            <AlertDialogTitle className="text-center text-xl">Data Terkirim Sukses!</AlertDialogTitle>
+            <AlertDialogDescription className="text-center mt-4">
+              Terima kasih telah mengisi buku tamu. Data Anda telah diterima dan akan segera diverifikasi oleh admin.
+              <br />
+              <br />
+              Anda akan menerima email notifikasi ketika kunjungan Anda telah disetujui.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex gap-2 justify-center">
+            <AlertDialogAction onClick={() => setShowSuccessDialog(false)} className="px-6">
+              OK
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     <div className="min-h-screen bg-background">
       {/* Decorative Header Background */}
       <div className="absolute inset-x-0 top-0 h-72 bg-primary/5 -z-10">
@@ -324,5 +354,6 @@ export default function BukuTamuPage() {
         </div>
       </main>
     </div>
+    </>
   )
 }
