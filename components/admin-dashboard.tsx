@@ -115,7 +115,8 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
 
   const getExportData = () => {
     return data.filter((tamu) => {
-      // Exclude rejected data from export
+      // Only export data with status "pending" or "accepted"
+      // Rejected data is already deleted from database, so no need to filter
       if (tamu.status === "rejected") {
         return false
       }
