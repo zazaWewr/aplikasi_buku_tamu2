@@ -97,18 +97,8 @@ export async function rejectTamu(
       throw new Error("Tamu data not found")
     }
 
-    // Update status to rejected
-    const { error: updateError } = await supabase
-      .from("tamu")
-      .update({
-        status: "rejected",
-        verified_at: new Date().toISOString(),
-        verified_by: adminEmail,
-        rejection_reason: reason,
-      })
-      .eq("id", tamuId)
-
-    if (updateError) throw updateError
+    // NOTE: Data ditolak HANYA disimpan di client-side state, TIDAK disimpan ke database
+    // Hanya kirim email notifikasi ke pengunjung
 
     // Send email notification
     const emailResult = await resend.emails.send({

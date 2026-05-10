@@ -151,7 +151,22 @@ export default function LoginPage() {
                   "Masuk ke Dashboard"
                 )}
               </Button>
+
+              <div className="text-right pt-2 animate-fade-in animate-delay-300">
+                <Link href="/auth/forgot-password" className="text-sm text-primary hover:underline font-medium">
+                  Lupa Password?
+                </Link>
+              </div>
             </form>
+
+            <div className="mt-8 pt-6 border-t text-center animate-fade-in animate-delay-400">
+              <p className="text-sm text-muted-foreground">
+                Belum punya akun?{" "}
+                <Link href="/auth/sign-up" className="text-primary font-medium hover:underline">
+                  Daftar di sini
+                </Link>
+              </p>
+            </div>
 
            {/* Demo Credentials Info */}
 <div className="mt-6 pt-6 border-t animate-fade-in animate-delay-400">

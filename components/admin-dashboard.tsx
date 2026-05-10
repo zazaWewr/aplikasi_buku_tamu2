@@ -115,6 +115,11 @@ export function AdminDashboard({ initialData, userEmail }: AdminDashboardProps) 
 
   const getExportData = () => {
     return data.filter((tamu) => {
+      // Exclude rejected data from export
+      if (tamu.status === "rejected") {
+        return false
+      }
+
       const visitDate = new Date(tamu.created_at)
       
       if (exportMode === "range" && exportStartDate && exportEndDate) {
