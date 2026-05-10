@@ -1,9 +1,6 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { Resend } from "resend"
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function approveTamu(
   tamuId: string,
@@ -85,50 +82,6 @@ export async function rejectTamu(
   try {
     console.log("[v0] Starting rejectTamu for ID:", tamuId)
     const supabase = await createClient()
-
-    // Get tamu data
-    const { data: tamuData, error: fetchError } = await supabase
-      .from("tamu")
-      .select("*")
-      .eq("id", tamuId)
-      .single()
-
-    if (fetchError || !tamuData) {
-      console.error("[v0] Tamu data not found:", fetchError)
-      throw new Error("Tamu data not found")
-    }
-
-    console.log("[v0] Found tamu data:", tamuData.nama)
-
-    // Send simple email notification (no reason needed)
-    const emailResult = await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: tamuData.email,
-      subject: "Pemberitahuan Kunjungan Anda",
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #dc2626;">Kunjungan Anda Tidak Dapat Disetujui</h2>
-            <p>Halo ${tamuData.nama},</p>
-            <p>Terima kasih atas permohonan kunjungan Anda ke SMA Muhammadiyah Kupang. Sayangnya, kunjungan Anda pada saat ini tidak dapat kami setujui.</p>
-            
-            <p>Silakan hubungi kami kembali untuk informasi lebih lanjut atau untuk menjadwalkan kunjungan di waktu lain.</p>
-            
-            <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-              Terima kasih,<br>
-              SMA Muhammadiyah Kupang
-            </p>
-          </div>
-        </div>
-      `,
-    })
-
-    if (!emailResult.id) {
-      console.error("[v0] Email send failed")
-      throw new Error("Failed to send email notification")
-    }
-
-    console.log("[v0] Email sent successfully")
 
     // Delete the record from database (permanent deletion)
     const { error: deleteError } = await supabase
