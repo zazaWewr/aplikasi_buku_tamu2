@@ -98,9 +98,14 @@ export function VerificationTab({
   const handleReject = (tamuId: string) => {
     startTransition(async () => {
       const result = await rejectTamu(tamuId, userEmail)
+      console.log("[v0] Reject result:", result)
       if (result.success) {
+        console.log("[v0] Reject successful, removing from data")
         setData(data.filter(t => t.id !== tamuId))
         onDataRefresh()
+      } else {
+        console.error("[v0] Reject failed:", result.error)
+        alert("Gagal menolak kunjungan: " + result.error)
       }
     })
   }
@@ -291,17 +296,18 @@ export function VerificationTab({
                                   <AlertDialogCancel>
                                     Batal
                                   </AlertDialogCancel>
-                                  <AlertDialogAction
+                                  <Button
                                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    onClick={() =>
+                                    onClick={() => {
+                                      console.log("[v0] Reject clicked for tamu:", tamu.id)
                                       handleReject(tamu.id)
-                                    }
+                                    }}
                                     disabled={isPending}
                                   >
                                     {isPending
                                       ? "Menghapus..."
                                       : "Ya, Tolak"}
-                                  </AlertDialogAction>
+                                  </Button>
                                 </AlertDialogFooter>
                               </AlertDialogContent>
                             </AlertDialog>
