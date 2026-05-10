@@ -58,6 +58,8 @@ export function VerificationTab({
       const tomorrow = new Date(today)
       tomorrow.setDate(tomorrow.getDate() + 1)
 
+      console.log("[v0] Fetching guests from", today.toISOString(), "to", tomorrow.toISOString())
+
       const { data: tamu, error } = await supabase
         .from("tamu")
         .select("*")
@@ -65,8 +67,12 @@ export function VerificationTab({
         .lt("created_at", tomorrow.toISOString())
         .order("created_at", { ascending: false })
 
+      console.log("[v0] Fetch result:", { count: tamu?.length, error: error?.message })
+
       if (!error && tamu) {
         setData(tamu)
+      } else {
+        console.error("[v0] Error fetching guests:", error)
       }
       setIsLoading(false)
     }
@@ -88,9 +94,12 @@ export function VerificationTab({
     startTransition(async () => {
       const result = await approveTamu(tamuId, userEmail)
       if (result.success) {
-        setSelectedTamuId(null)
+        console.log("[v0] Approve successful, updating data")
         setData(data.map(t => t.id === tamuId ? { ...t, status: "accepted" } : t))
         onDataRefresh()
+      } else {
+        console.error("[v0] Approve failed:", result.error)
+        alert("Gagal menyetujui kunjungan: " + result.error)
       }
     })
   }
