@@ -289,7 +289,7 @@ export function VerificationTab({
                                     Yakin ingin menolak kunjungan?
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Kunjungan dari <strong>{tamu.nama}</strong> akan dihapus dari database dan email pemberitahuan akan dikirim.
+                                    Kunjungan dari <strong>{tamu.nama}</strong> akan dihapus dari database.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
