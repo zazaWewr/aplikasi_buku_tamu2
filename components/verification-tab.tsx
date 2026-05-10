@@ -46,20 +46,19 @@ export function VerificationTab({
   const [isLoading, setIsLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
 
-  // Fetch today's pending guests on mount
+  // Fetch all guests with any status
   React.useEffect(() => {
-    const fetchPendingGuests = async () => {
+    const fetchAllGuests = async () => {
       if (typeof window === "undefined") return
       
       const { createClient } = await import("@/lib/supabase/client")
       const supabase = createClient()
 
-      console.log("[v0] Fetching all pending guests")
+      console.log("[v0] Fetching all guests with any status")
 
       const { data: tamu, error } = await supabase
         .from("tamu")
         .select("*")
-        .eq("status", "pending")
         .order("created_at", { ascending: false })
 
       console.log("[v0] Fetch result:", { count: tamu?.length, error: error?.message })
@@ -72,7 +71,7 @@ export function VerificationTab({
       setIsLoading(false)
     }
 
-    fetchPendingGuests()
+    fetchAllGuests()
   }, [])
 
   const acceptedCount = data.filter(
@@ -104,8 +103,8 @@ export function VerificationTab({
       const result = await rejectTamu(tamuId, userEmail)
       console.log("[v0] Reject result:", result)
       if (result.success) {
-        console.log("[v0] Reject successful, removing from data")
-        setData(data.filter(t => t.id !== tamuId))
+        console.log("[v0] Reject successful, updating status")
+        setData(data.map(t => t.id === tamuId ? { ...t, status: "rejected" } : t))
         onDataRefresh()
       } else {
         console.error("[v0] Reject failed:", result.error)

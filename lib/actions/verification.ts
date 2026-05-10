@@ -61,22 +61,26 @@ export async function rejectTamu(
     console.log("[v0] Starting rejectTamu for ID:", tamuId)
     const supabase = await createClient()
 
-    // Delete the record from database (permanent deletion)
-    const { error: deleteError } = await supabase
+    // Update status to rejected (not delete)
+    const { error: updateError } = await supabase
       .from("tamu")
-      .delete()
+      .update({
+        status: "rejected",
+        verified_at: new Date().toISOString(),
+        verified_by: adminEmail,
+      })
       .eq("id", tamuId)
 
-    if (deleteError) {
-      console.error("[v0] Delete failed:", deleteError)
-      throw new Error("Failed to delete tamu data: " + deleteError.message)
+    if (updateError) {
+      console.error("[v0] Update failed:", updateError)
+      throw new Error("Failed to reject tamu data: " + updateError.message)
     }
 
-    console.log("[v0] Tamu data deleted successfully")
+    console.log("[v0] Tamu status updated to rejected successfully")
 
     return {
       success: true,
-      message: "Kunjungan ditolak dan data dihapus.",
+      message: "Kunjungan ditolak.",
     }
   } catch (error) {
     console.error("[v0] Error rejecting tamu:", error)
