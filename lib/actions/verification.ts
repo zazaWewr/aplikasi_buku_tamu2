@@ -83,6 +83,7 @@ export async function rejectTamu(
   adminEmail: string
 ) {
   try {
+    console.log("[v0] Starting rejectTamu for ID:", tamuId)
     const supabase = await createClient()
 
     // Get tamu data
@@ -93,8 +94,11 @@ export async function rejectTamu(
       .single()
 
     if (fetchError || !tamuData) {
+      console.error("[v0] Tamu data not found:", fetchError)
       throw new Error("Tamu data not found")
     }
+
+    console.log("[v0] Found tamu data:", tamuData.nama)
 
     // Send simple email notification (no reason needed)
     const emailResult = await resend.emails.send({
@@ -120,8 +124,11 @@ export async function rejectTamu(
     })
 
     if (!emailResult.id) {
+      console.error("[v0] Email send failed")
       throw new Error("Failed to send email notification")
     }
+
+    console.log("[v0] Email sent successfully")
 
     // Delete the record from database (permanent deletion)
     const { error: deleteError } = await supabase
@@ -130,8 +137,11 @@ export async function rejectTamu(
       .eq("id", tamuId)
 
     if (deleteError) {
+      console.error("[v0] Delete failed:", deleteError)
       throw new Error("Failed to delete tamu data: " + deleteError.message)
     }
+
+    console.log("[v0] Tamu data deleted successfully")
 
     return {
       success: true,
