@@ -53,20 +53,21 @@ export function VerificationTab({
       
       const { createClient } = await import("@/lib/supabase/client")
       const supabase = createClient()
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const tomorrow = new Date(today)
-      tomorrow.setDate(tomorrow.getDate() + 1)
+
+      console.log("[v0] Fetching all pending guests")
 
       const { data: tamu, error } = await supabase
         .from("tamu")
         .select("*")
-        .gte("created_at", today.toISOString())
-        .lt("created_at", tomorrow.toISOString())
+        .eq("status", "pending")
         .order("created_at", { ascending: false })
+
+      console.log("[v0] Fetch result:", { count: tamu?.length, error: error?.message })
 
       if (!error && tamu) {
         setData(tamu)
+      } else {
+        console.error("[v0] Error fetching guests:", error)
       }
       setIsLoading(false)
     }
@@ -88,9 +89,12 @@ export function VerificationTab({
     startTransition(async () => {
       const result = await approveTamu(tamuId, userEmail)
       if (result.success) {
-        setSelectedTamuId(null)
+        console.log("[v0] Approve successful, updating data")
         setData(data.map(t => t.id === tamuId ? { ...t, status: "accepted" } : t))
         onDataRefresh()
+      } else {
+        console.error("[v0] Approve failed:", result.error)
+        alert("Gagal menyetujui kunjungan: " + result.error)
       }
     })
   }
@@ -126,7 +130,7 @@ export function VerificationTab({
               {pendingCount}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Dari {data.length} hari ini
+              Total {data.length} permintaan
             </p>
           </CardContent>
         </Card>
@@ -169,7 +173,7 @@ export function VerificationTab({
       {/* Verification Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Verifikasi Kunjungan Hari Ini</CardTitle>
+          <CardTitle>Verifikasi Kunjungan</CardTitle>
           <CardDescription>
             Kelola permintaan kunjungan yang perlu diverifikasi
           </CardDescription>
@@ -179,7 +183,7 @@ export function VerificationTab({
             <div className="text-center py-10">
               <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
               <p className="text-muted-foreground">
-                Tidak ada permintaan kunjungan hari ini
+                Tidak ada permintaan kunjungan yang menunggu verifikasi
               </p>
             </div>
           ) : (
