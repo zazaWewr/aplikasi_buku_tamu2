@@ -46,20 +46,25 @@ export function VerificationTab({
   const [isLoading, setIsLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
 
-  // Fetch today's pending guests on mount
+  // Fetch all guests from the last 24 hours with any status
   React.useEffect(() => {
-    const fetchPendingGuests = async () => {
+    const fetchAllGuests = async () => {
       if (typeof window === "undefined") return
       
       const { createClient } = await import("@/lib/supabase/client")
       const supabase = createClient()
 
-      console.log("[v0] Fetching all pending guests")
+      // Calculate 24 hours ago
+      const now = new Date()
+      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+      console.log("[v0] Fetching guests from last 24 hours")
+      console.log("[v0] From:", twentyFourHoursAgo.toISOString(), "To:", now.toISOString())
 
       const { data: tamu, error } = await supabase
         .from("tamu")
         .select("*")
-        .eq("status", "pending")
+        .gte("created_at", twentyFourHoursAgo.toISOString())
         .order("created_at", { ascending: false })
 
       console.log("[v0] Fetch result:", { count: tamu?.length, error: error?.message })
@@ -72,7 +77,7 @@ export function VerificationTab({
       setIsLoading(false)
     }
 
-    fetchPendingGuests()
+    fetchAllGuests()
   }, [])
 
   const acceptedCount = data.filter(
@@ -104,8 +109,8 @@ export function VerificationTab({
       const result = await rejectTamu(tamuId, userEmail)
       console.log("[v0] Reject result:", result)
       if (result.success) {
-        console.log("[v0] Reject successful, removing from data")
-        setData(data.filter(t => t.id !== tamuId))
+        console.log("[v0] Reject successful, updating status")
+        setData(data.map(t => t.id === tamuId ? { ...t, status: "rejected" } : t))
         onDataRefresh()
       } else {
         console.error("[v0] Reject failed:", result.error)
@@ -130,7 +135,7 @@ export function VerificationTab({
               {pendingCount}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Total {data.length} permintaan
+              Total {pendingCount} permintaan
             </p>
           </CardContent>
         </Card>
