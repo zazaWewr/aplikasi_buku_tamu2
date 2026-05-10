@@ -80,8 +80,7 @@ export async function approveTamu(
 
 export async function rejectTamu(
   tamuId: string,
-  adminEmail: string,
-  reason: string
+  adminEmail: string
 ) {
   try {
     const supabase = await createClient()
@@ -97,7 +96,7 @@ export async function rejectTamu(
       throw new Error("Tamu data not found")
     }
 
-    // Send email notification with rejection reason FIRST
+    // Send simple email notification (no reason needed)
     const emailResult = await resend.emails.send({
       from: "onboarding@resend.dev",
       to: tamuData.email,
@@ -105,17 +104,47 @@ export async function rejectTamu(
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #dc2626;">Kunjungan Anda Belum Dapat Disetujui</h2>
+            <h2 style="color: #dc2626;">Kunjungan Anda Tidak Dapat Disetujui</h2>
             <p>Halo ${tamuData.nama},</p>
-            <p>Terima kasih atas kunjungan Anda ke SMA Muhammadiyah Kupang. Sayangnya, kunjungan Anda pada saat ini belum dapat kami setujui.</p>
+            <p>Terima kasih atas permohonan kunjungan Anda ke SMA Muhammadiyah Kupang. Sayangnya, kunjungan Anda pada saat ini tidak dapat kami setujui.</p>
             
-            <div style="background-color: #fee2e2; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
-              <h3 style="color: #991b1b; margin-top: 0;">Alasan:</h3>
-              <p>${reason}</p>
-            </div>
+            <p>Silakan hubungi kami kembali untuk informasi lebih lanjut atau untuk menjadwalkan kunjungan di waktu lain.</p>
             
-            <p>Silakan hubungi kami untuk informasi lebih lanjut atau untuk menjadwalkan kunjungan di waktu lain.</p>
-            <p><strong>Nomor HP:</strong> (hubungi sekolah untuk informasi kontak)</p>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+              Terima kasih,<br>
+              SMA Muhammadiyah Kupang
+            </p>
+          </div>
+        </div>
+      `,
+    })
+
+    if (!emailResult.id) {
+      throw new Error("Failed to send email notification")
+    }
+
+    // Delete the record from database (permanent deletion)
+    const { error: deleteError } = await supabase
+      .from("tamu")
+      .delete()
+      .eq("id", tamuId)
+
+    if (deleteError) {
+      throw new Error("Failed to delete tamu data: " + deleteError.message)
+    }
+
+    return {
+      success: true,
+      message: "Kunjungan ditolak dan data dihapus.",
+    }
+  } catch (error) {
+    console.error("[v0] Error rejecting tamu:", error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    }
+  }
+}
             
             <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
               Terima kasih,<br>

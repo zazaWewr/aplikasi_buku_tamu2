@@ -12,20 +12,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
 import {
   Table,
   TableBody,
@@ -57,8 +45,6 @@ export function VerificationTab({
   const [data, setData] = useState<Tamu[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
-  const [rejectReason, setRejectReason] = useState("")
-  const [selectedTamuId, setSelectedTamuId] = useState<string | null>(null)
 
   // Fetch today's pending guests on mount
   React.useEffect(() => {
@@ -110,16 +96,10 @@ export function VerificationTab({
   }
 
   const handleReject = (tamuId: string) => {
-    if (!rejectReason.trim()) {
-      alert("Silakan masukkan alasan penolakan")
-      return
-    }
     startTransition(async () => {
-      const result = await rejectTamu(tamuId, userEmail, rejectReason)
+      const result = await rejectTamu(tamuId, userEmail)
       if (result.success) {
-        setRejectReason("")
-        setSelectedTamuId(null)
-        setData(data.map(t => t.id === tamuId ? { ...t, status: "rejected", rejection_reason: rejectReason } : t))
+        setData(data.filter(t => t.id !== tamuId))
         onDataRefresh()
       }
     })
@@ -286,8 +266,8 @@ export function VerificationTab({
                               </AlertDialogContent>
                             </AlertDialog>
 
-                            <Dialog>
-                              <DialogTrigger asChild>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -297,61 +277,34 @@ export function VerificationTab({
                                   <X className="h-4 w-4" />
                                   Tolak
                                 </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>
-                                    Tolak Kunjungan
-                                  </DialogTitle>
-                                  <DialogDescription>
-                                    Masukkan alasan penolakan
-                                    kunjungan dari {tamu.nama}
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="space-y-4">
-                                  <div className="space-y-2">
-                                    <Label htmlFor="reject-reason">
-                                      Alasan Penolakan
-                                    </Label>
-                                    <Textarea
-                                      id="reject-reason"
-                                      placeholder="Jelaskan alasan penolakan kunjungan..."
-                                      value={rejectReason}
-                                      onChange={(e) =>
-                                        setRejectReason(
-                                          e.target.value
-                                        )
-                                      }
-                                      rows={4}
-                                    />
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button
-                                    variant="outline"
-                                    onClick={() =>
-                                      setRejectReason("")
-                                    }
-                                  >
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Yakin ingin menolak kunjungan?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Kunjungan dari <strong>{tamu.nama}</strong> akan dihapus dari database dan email pemberitahuan akan dikirim.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>
                                     Batal
-                                  </Button>
-                                  <Button
-                                    variant="destructive"
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                     onClick={() =>
                                       handleReject(tamu.id)
                                     }
-                                    disabled={
-                                      isPending ||
-                                      !rejectReason.trim()
-                                    }
+                                    disabled={isPending}
                                   >
                                     {isPending
-                                      ? "Memproses..."
-                                      : "Tolak"}
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
+                                      ? "Menghapus..."
+                                      : "Ya, Tolak"}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         )}
                         {tamu.status !== "pending" && (
