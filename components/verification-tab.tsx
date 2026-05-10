@@ -249,8 +249,7 @@ export function VerificationTab({
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
                                     Anda yakin ingin menyetujui kunjungan
-                                    dari {tamu.nama}? Email notifikasi
-                                    akan dikirim.
+                                    dari {tamu.nama}?
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
