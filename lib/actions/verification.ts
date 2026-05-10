@@ -97,10 +97,7 @@ export async function rejectTamu(
       throw new Error("Tamu data not found")
     }
 
-    // NOTE: Data ditolak HANYA disimpan di client-side state, TIDAK disimpan ke database
-    // Hanya kirim email notifikasi ke pengunjung
-
-    // Send email notification
+    // Send email notification with rejection reason FIRST
     const emailResult = await resend.emails.send({
       from: "onboarding@resend.dev",
       to: tamuData.email,
@@ -129,13 +126,29 @@ export async function rejectTamu(
       `,
     })
 
-    if (emailResult.error) {
-      console.error("Email send error:", emailResult.error)
+    if (!emailResult.id) {
+      throw new Error("Failed to send email notification")
     }
 
-    return { success: true, message: "Kunjungan ditolak dan email pemberitahuan dikirim" }
+    // THEN delete the record from database (permanent deletion)
+    const { error: deleteError } = await supabase
+      .from("tamu")
+      .delete()
+      .eq("id", tamuId)
+
+    if (deleteError) {
+      throw new Error("Failed to delete tamu data: " + deleteError.message)
+    }
+
+    return {
+      success: true,
+      message: "Kunjungan ditolak dan data dihapus dari database. Email notifikasi terkirim.",
+    }
   } catch (error) {
-    console.error("Reject tamu error:", error)
-    return { success: false, message: "Gagal menolak kunjungan" }
+    console.error("[v0] Error rejecting tamu:", error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    }
   }
 }
