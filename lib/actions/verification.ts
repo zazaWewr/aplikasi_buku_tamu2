@@ -145,39 +145,3 @@ export async function rejectTamu(
     }
   }
 }
-            
-            <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-              Terima kasih,<br>
-              SMA Muhammadiyah Kupang
-            </p>
-          </div>
-        </div>
-      `,
-    })
-
-    if (!emailResult.id) {
-      throw new Error("Failed to send email notification")
-    }
-
-    // THEN delete the record from database (permanent deletion)
-    const { error: deleteError } = await supabase
-      .from("tamu")
-      .delete()
-      .eq("id", tamuId)
-
-    if (deleteError) {
-      throw new Error("Failed to delete tamu data: " + deleteError.message)
-    }
-
-    return {
-      success: true,
-      message: "Kunjungan ditolak dan data dihapus dari database. Email notifikasi terkirim.",
-    }
-  } catch (error) {
-    console.error("[v0] Error rejecting tamu:", error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    }
-  }
-}
