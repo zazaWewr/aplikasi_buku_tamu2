@@ -46,7 +46,7 @@ export function VerificationTab({
   const [isLoading, setIsLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
 
-  // Fetch all guests with any status
+  // Fetch all guests from the last 24 hours with any status
   React.useEffect(() => {
     const fetchAllGuests = async () => {
       if (typeof window === "undefined") return
@@ -54,11 +54,17 @@ export function VerificationTab({
       const { createClient } = await import("@/lib/supabase/client")
       const supabase = createClient()
 
-      console.log("[v0] Fetching all guests with any status")
+      // Calculate 24 hours ago
+      const now = new Date()
+      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+      console.log("[v0] Fetching guests from last 24 hours")
+      console.log("[v0] From:", twentyFourHoursAgo.toISOString(), "To:", now.toISOString())
 
       const { data: tamu, error } = await supabase
         .from("tamu")
         .select("*")
+        .gte("created_at", twentyFourHoursAgo.toISOString())
         .order("created_at", { ascending: false })
 
       console.log("[v0] Fetch result:", { count: tamu?.length, error: error?.message })
@@ -129,7 +135,7 @@ export function VerificationTab({
               {pendingCount}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Total {data.length} permintaan
+              Total {pendingCount} permintaan
             </p>
           </CardContent>
         </Card>
